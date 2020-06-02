@@ -1,0 +1,118 @@
+
+familia(
+     persona([tomas,garcia,perez],
+   fecha(7,mayo,1960),
+      trabaja(profesor,60)), %-->papa
+
+   persona(
+       [ana,lopez,ruiz],
+   fecha(10,marzo,1962),
+      trabaja(medica,90)), %-->mama
+    [
+    persona([juan,garcia,lopez],fecha(7,mayo,1960),estudiante),
+    persona([maria,garcia,lopez],fecha(12,abril,1992),estudiante)
+    ]  %->hijos
+).
+
+familia(
+     persona([jose,perez,ruiz],
+   fecha(6,marzo,1963),
+      trabaja(pintor,120)), %-->papa
+
+   persona(
+       [luisa,galvez,perez],
+   fecha(12,mayo,1964),
+      trabaja(medica,90)), %-->mama
+    [
+    persona([juan_luis,perez,perez],fecha(5,febrero,1990),estudiante),
+    persona([maria_jose,perez,perez],fecha(12,junio,1990),estudiante),
+    persona([jose_maria,perez,perez],fecha(5,julio,1990),estudiante)
+    ]  %->hijos
+).
+
+familia(
+     persona([pedro,garcia,perez],
+   fecha(7,mayo,1960),
+      trabaja(policia,50)), %-->papa
+
+   persona(
+       [sonia,lopez,ruiz],
+   fecha(10,marzo,1962),
+      estudiante),
+    []).
+
+/*total de sueldos*/
+ total:-write("funciona"),
+    findall(G,familia(persona(_,_,trabaja(_,G)),_,_),L),
+    suma(L,T),
+    write("la suma total de sueldos de padres es "),
+    write(T).
+promedio:-write("funciona"),
+    findall(G,familia(persona(_,_,trabaja(_,G)),trabaja(_,G),_),(L,T)),write(L,T).
+
+%caso general
+suma([],0).
+%suma(A,R):H is -length(A)<=0,R is 0.
+suma([L|B],R):-
+    suma(B,R1),R is L+R1.
+%sber si pertenece a una familia como hijo
+%member --> devuelve si es verdadero
+soyhijo(X):-familia(_,_,Hijos),member(X,Hijos).
+
+/*mostrar los padres que ganan > 90*/
+
+gananmas(P):-findall(G,familia(persona([P,_,_],_,trabaja(_,G<60)),_,_),L),
+    write(L).
+
+padresGanen(P):-
+    familia(persona([P,_,_],_,trabaja(_,G)),_,_),
+    G >= 90.
+
+sacarlistapersonas(X):-
+    soyhijo(X);
+    familia(X,_,_);
+    familia(_,X,_).
+
+fecha_naci(persona(_,Y,_),Y).
+
+separarnombre(persona(N,_,_),N).
+
+%listar los que son < 1990
+%lista(X):-sacarlistapersonas(X),fecha_naci(X,fecha(_,_,Año)),Año<1990,
+       separarnombre(X,T), write(T).
+
+lista:-sacarlistapersonas(X),fecha_naci(X,fecha(_,_,Año)),Año<1990,
+       separarnombre(X,T),write(T).
+
+
+sacarhijos(familia(_,_,K),K).
+
+%soyhijo(X):-familia(_,_,Hijos),member(X,Hijos).
+soymadre(P):-familia(_,P,Hijos),familia(_,_,persona(_,_,Hijos)).
+
+hijos:-contar_hijos(soyhijo(X),N).
+madres(X):-soymadre(X).
+mostrarhijos:-sacarlistapersonas(X),fecha_naci(_,_),write(X).
+
+
+
+/*Con el ejemplo que se vio en clases, realiza las reglas necesarias para,
+El promedio de sueldo por familia.
+Modificando los hechos necesarios para, consultar los que tienen
+alergias comunes.Sacar el promedio de hijos por familia.*/
+gananmas(P):-findall(G,familia(persona([P,_,_],_,trabaja(_,G<60)),_,_),L),
+    write(L).
+soyhijo(X):-familia(_,_,Hijos),member(X,Hijos).
+
+suma([L|B],R):-
+    suma(B,R1),R is L+R1.
+
+contar_hijos([],0).
+contar_hijos([_|L],R):-contar_hijos(L,R1),R is R1+1.
+
+mostrar_hijos(X):-familia(_,_,Hijos),member(X,Hijos).
+
+mostrar_n:-mostrar_hijos(P),write(P).
+sueldo(G):-familia(persona([_,_,_],_,trabaja(_,G)),_,_).
+
+tot(N):-sueldo(G),N is G+G.
